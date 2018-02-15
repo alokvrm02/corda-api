@@ -110,7 +110,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         ]
     }
     node {
-        name "O=PartyA,L=London,C=GB"
+        name "O=BCS Learning,L=India,C=IN"
         advertisedServices = []
         p2pPort 10005
         rpcPort 10006
@@ -120,10 +120,13 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
                 "$project.group:cordapp:$project.version",
                 "$corda_release_group:corda-finance:$corda_release_version"
         ]
-        rpcUsers = [[ user: "user1", "password": "test", "permissions": []]]
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": [
+                "StartFlow.com.template.AlokIssueRequest",
+                "StartFlow.com.template.AlokMoveRequest"
+        ]]]
     }
     node {
-        name "O=PartyB,L=New York,C=US"
+        name "O=Bank of Alok,L=Bloemfontein,C=ZA"
         advertisedServices = []
         p2pPort 10008
         rpcPort 10009
@@ -137,8 +140,9 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     }
 }
 
-task runTemplateClient(type: JavaExec) {
+task runBankClient(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'com.template.ClientKt'
     args 'localhost:10006'
+    args findProperty("thought") ?: "AN EMPTY MIND IS AN EMPTY KIND"
 }
