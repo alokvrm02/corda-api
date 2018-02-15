@@ -14,14 +14,14 @@ fun main(args: Array<String>) {
     TemplateClient().main(args)
 }
 
-private class TemplateClient {
+private class AlokClient {
     companion object {
-        val logger: Logger = loggerFor<TemplateClient>()
-        private fun logState(state: StateAndRef<TemplateState>) = logger.info("{}", state.state.data)
+        val logger: Logger = loggerFor<AlokClient>()
+        private fun logState(state: StateAndRef<AlokState>) = logger.info("{}", state.state.data)
     }
 
     fun main(args: Array<String>) {
-        require(args.size == 1) { "Usage: TemplateClient <node address>" }
+        require(args.size == 1) { "Usage: AlokClient <node address> <thought>" }
         val nodeAddress = parse(args[0])
         val client = CordaRPCClient(nodeAddress)
 
@@ -29,8 +29,13 @@ private class TemplateClient {
         val proxy = client.start("user1", "test").proxy
 
         // Grab all existing TemplateStates and all future TemplateStates.
-        val (snapshot, updates) = proxy.vaultTrack(TemplateState::class.java)
+        val (snapshot, updates) = proxy.vaultTrack(AlokState::class.java)
 
+        proxy.waitUntilNetworkReady().getOrThrow()
+        val issuerID = proxy.wellKnownPartyFromX500Name(BOD_NAME) ?: throw IllegalArgumentException("Could not find the issuer node '${BOD_NAME}'.")
+
+        proxy.startFlow(::AlokIssueRequest, args[1], issuerID)
+                .returnValue.getOrThrow()
         // Log the existing TemplateStates and listen for new ones.
         snapshot.states.forEach { logState(it) }
         updates.toBlocking().subscribe { update ->
