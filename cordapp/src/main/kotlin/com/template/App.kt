@@ -99,12 +99,10 @@ class AlokIssueResponse(val counterpartySession: FlowSession): FlowLogic<Unit>()
 
                 val alok = output as AlokState
                 "The issuer of Alok must be the issuing node" using (alok.issuer.owningKey == ourIdentity.owningKey)
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
 
         subFlow(signTransactionFlow)
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
 
@@ -132,7 +130,6 @@ class AlokMoveRequest(val alok: StateAndRef<AlokState>, val newOwner : Party) : 
         val fullySignedTx = subFlow(CollectSignaturesFlow(signedTx, listOf(moveSession)))   // Obtaining the counterparty's signature.
 
         return subFlow(FinalityFlow(fullySignedTx))      // Finalising the transaction.
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }
