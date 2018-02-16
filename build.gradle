@@ -97,9 +97,9 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     directory "./build/nodes"
-    networkMap "O=NetworkMapAndNotary,L=London,C=GB"
+    networkMap "O=NetworkMapAndNotary,L=Zurich,C=CH"
     node {
-        name "O=NetworkMapAndNotary,L=London,C=GB"
+        name "O=NetworkMapAndNotary,L=Zurich,C=CH"
         advertisedServices = ["corda.notary.validating"]
         p2pPort 10002
         rpcPort 10003
@@ -110,11 +110,11 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         ]
     }
     node {
-        name "O=BCS Learning,L=India,C=IN"
+        name "O=BCS Learning,L=Sydney,C=AU"
         advertisedServices = []
         p2pPort 10005
         rpcPort 10006
-        webPort 10007
+    //    webPort 10007
         cordapps = [
                 "$project.group:cordapp-contracts-states:$project.version",
                 "$project.group:cordapp:$project.version",
@@ -130,7 +130,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         advertisedServices = []
         p2pPort 10008
         rpcPort 10009
-        webPort 10010
+     //   webPort 10010
         cordapps = [
                 "$project.group:cordapp-contracts-states:$project.version",
                 "$project.group:cordapp:$project.version",

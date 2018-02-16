@@ -2,7 +2,9 @@ package com.template
 
 import net.corda.client.rpc.CordaRPCClient
 import net.corda.core.contracts.StateAndRef
+import net.corda.core.messaging.startFlow
 import net.corda.core.utilities.NetworkHostAndPort.Companion.parse
+import net.corda.core.utilities.getOrThrow
 import net.corda.core.utilities.loggerFor
 import org.slf4j.Logger
 
@@ -11,7 +13,7 @@ import org.slf4j.Logger
  * stream the contents of the node's vault.
  */
 fun main(args: Array<String>) {
-    TemplateClient().main(args)
+    AlokClient().main(args)
 }
 
 private class AlokClient {
