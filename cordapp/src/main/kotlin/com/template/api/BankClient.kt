@@ -1,4 +1,4 @@
-package com.template.api
+package com.dgkrajnik.bank.api
 
 import com.template.AlokIssueRequest
 import com.template.AlokMoveRequest
@@ -11,10 +11,15 @@ import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.NetworkHostAndPort
 import net.corda.core.utilities.getOrThrow
 
-
-object BankOfAlokClientApi{
-
-
+/**
+ * Interface for communicating with the Bank of Daniel node.
+ */
+object BankOfAlokClientApi {
+    /**
+     * Requests a Daniel issuance via RPC.
+     *
+     * @return the issuing transaction.
+     */
     fun requestRPCIssue(rpcAddress: NetworkHostAndPort, thought: String, issuer: CordaX500Name): SignedTransaction {
         val client = CordaRPCClient(rpcAddress)
         client.start("user1", "test").use { connection ->
@@ -28,9 +33,12 @@ object BankOfAlokClientApi{
         }
     }
 
-
-
-    fun requestRPCMove(rpcAddress: NetworkHostAndPort, alok: StateAndRef<AlokState>, newOwner: CordaX500Name): SignedTransaction {
+    /**
+     * Requests a Daniel transfer via RPC
+     *
+     * @return the move transaction
+     */
+    fun requestRPCMove(rpcAddress: NetworkHostAndPort, daniel: StateAndRef<AlokState>, newOwner: CordaX500Name): SignedTransaction {
         val client = CordaRPCClient(rpcAddress)
         client.start("user1", "test").use { connection ->
             val rpc = connection.proxy
@@ -38,7 +46,7 @@ object BankOfAlokClientApi{
 
             val ownerID = rpc.wellKnownPartyFromX500Name(newOwner) ?: throw IllegalArgumentException("Could not find the new owner node '${newOwner}'.")
 
-            return rpc.startFlow(::AlokMoveRequest, alok, ownerID)
+            return rpc.startFlow(::AlokMoveRequest, daniel, ownerID)
                     .returnValue.getOrThrow()
         }
     }

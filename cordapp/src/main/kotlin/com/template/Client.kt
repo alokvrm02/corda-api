@@ -23,7 +23,7 @@ private class AlokClient {
     }
 
     fun main(args: Array<String>) {
-        require(args.size == 1) { "Usage: AlokClient <node address> <thought>" }
+        require(args.size == 2) { "Usage: AlokClient <node address> <thought>`" }
         val nodeAddress = parse(args[0])
         val client = CordaRPCClient(nodeAddress)
 
