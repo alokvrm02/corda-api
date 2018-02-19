@@ -11,7 +11,6 @@ import net.corda.core.transactions.TransactionBuilder
 // *****************
 // * Contract Code *
 // *****************
-// This is used to identify our contract when building a transaction
 val ALOK_CONTRACT_ID = "com.template.AlokContract"
 
 open class AlokContract : Contract {
@@ -74,10 +73,6 @@ open class AlokContract : Contract {
         }
     }
 
-    // Used to indicate the transaction's intent.
-//    interface Commands : CommandData {
-//        class Action : Commands
-//    }
 }
 
 // *********
