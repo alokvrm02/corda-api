@@ -16,32 +16,34 @@ fun main(args: Array<String>) {
     AlokClient().main(args)
 }
 
-private class AlokClient {
-    companion object {
-        val logger: Logger = loggerFor<AlokClient>()
-        private fun logState(state: StateAndRef<AlokState>) = logger.info("{}", state.state.data)
-    }
 
-    fun main(args: Array<String>) {
-        require(args.size == 2) { "Usage: AlokClient <node address> <thought>`" }
-        val nodeAddress = parse(args[0])
-        val client = CordaRPCClient(nodeAddress)
 
-        // Can be amended in the com.template.MainKt file.
-        val proxy = client.start("user1", "test").proxy
+    private class AlokClient {
+        companion object {
+            val logger: Logger = loggerFor<AlokClient>()
+            private fun logState(state: StateAndRef<AlokState>) = logger.info("{}", state.state.data)
+        }
 
-        // Grab all existing TemplateStates and all future TemplateStates.
-        val (snapshot, updates) = proxy.vaultTrack(AlokState::class.java)
+        fun main(args: Array<String>) {
+            require(args.size == 2) { "Usage: AlokClient <node address> <thought>`" }
+            val nodeAddress = parse(args[0])
+            val client = CordaRPCClient(nodeAddress)
 
-        proxy.waitUntilNetworkReady().getOrThrow()
-        val issuerID = proxy.wellKnownPartyFromX500Name(BOD_NAME) ?: throw IllegalArgumentException("Could not find the issuer node '${BOD_NAME}'.")
+            val proxy = client.start("user1", "test").proxy
 
-        proxy.startFlow(::AlokIssueRequest, args[1], issuerID)
-                .returnValue.getOrThrow()
-        // Log the existing TemplateStates and listen for new ones.
-        snapshot.states.forEach { logState(it) }
-        updates.toBlocking().subscribe { update ->
-            update.produced.forEach { logState(it) }
+            val (snapshot, updates) = proxy.vaultTrack(AlokState::class.java)
+
+            proxy.waitUntilNetworkReady().getOrThrow()
+
+            val issuerID = proxy.wellKnownPartyFromX500Name(BOD_NAME) ?: throw IllegalArgumentException("Could not find the issuer node '${BOD_NAME}'.")
+
+            logger.info("=============came here===============")
+            proxy.startFlow(::AlokIssueRequest, args[1], issuerID)
+                    .returnValue.getOrThrow()
+
+            snapshot.states.forEach { logState(it) }
+            updates.subscribe { update ->
+                update.produced.forEach { logState(it) }
+            }
         }
     }
-}
