@@ -82,16 +82,16 @@ class AlokIssueRequest(val thought: String, val issuer: Party) : FlowLogic<Signe
 
 @InitiatedBy(AlokIssueRequest::class)
 class AlokIssueResponse(val counterpartySession: FlowSession) : FlowLogic<Unit>() { @Suspendable override fun call() { val signTransactionFlow = object : SignTransactionFlow(counterpartySession, SignTransactionFlow.tracker()) {
-            override fun checkTransaction(stx: SignedTransaction) = requireThat {
-                val output = stx.tx.outputs.single().data
-                "This must be a Daniel transaction." using (output is AlokState)
-                val daniel = output as AlokState
-                "The issuer of a Daniel must be the issuing node" using (daniel.issuer.owningKey == ourIdentity.owningKey)
-            }
-        }
-
-        subFlow(signTransactionFlow)
+    override fun checkTransaction(stx: SignedTransaction) = requireThat {
+        val output = stx.tx.outputs.single().data
+        "This must be a Alok transaction." using (output is AlokState)
+        val alok = output as AlokState
+        "The issuer of a Daniel must be the issuing node" using (alok.issuer.owningKey == ourIdentity.owningKey)
     }
+}
+
+    subFlow(signTransactionFlow)
+}
 }
 
 @InitiatingFlow
@@ -130,9 +130,9 @@ class AlokMoveResponse(val counterpartySession: FlowSession) : FlowLogic<Unit>()
         val signTransactionFlow = object : SignTransactionFlow(counterpartySession, SignTransactionFlow.tracker()) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
                 val output = stx.tx.outputs.single().data
-                "This must be a Daniel transaction." using (output is AlokState)
-                val daniel = output as AlokState
-                "The issuer of a Daniel must be the issuing node" using (daniel.issuer.owningKey == ourIdentity.owningKey)
+                "This must be a Alok transaction." using (output is AlokState)
+                val alok = output as AlokState
+                "The issuer of a Alok must be the issuing node" using (alok.issuer.owningKey == ourIdentity.owningKey)
             }
         }
 
@@ -140,3 +140,23 @@ class AlokMoveResponse(val counterpartySession: FlowSession) : FlowLogic<Unit>()
     }
 }
 
+// ***********
+// * Plugins *
+// ***********
+/*
+class TemplateWebPlugin : WebServerPluginRegistry {
+    // A list of classes that expose web JAX-RS REST APIs.
+    override val webApis: List<Function<CordaRPCOps, out Any>> = listOf(Function(::TemplateApi))
+    //A list of directories in the resources directory that will be served by Jetty under /web.
+    // This template's web frontend is accessible at /web/template.
+    override val staticServeDirs: Map<String, String> = mapOf(
+            // This will serve the templateWeb directory in resources to /web/template
+            "template" to javaClass.classLoader.getResource("templateWeb").toExternalForm()
+    )
+}
+*/
+
+// Serialization whitelist.
+class TemplateSerializationWhitelist : SerializationWhitelist {
+    override val whitelist: List<Class<*>> = listOf()
+}
